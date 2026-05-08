@@ -1,0 +1,86 @@
+[
+  {
+    "id": "gs-sf",
+    "name": "San Francisco Ground Station",
+    "lat": 37.7749,
+    "lon": -122.4194,
+    "altMeters": 15
+  },
+  {
+    "id": "gs-nyc",
+    "name": "New York Ground Station",
+    "lat": 40.7128,
+    "lon": -74.0060,
+    "altMeters": 10
+  },
+  {
+    "id": "gs-paris",
+    "name": "Paris Ground Station",
+    "lat": 48.8566,
+    "lon": 2.3522,
+    "altMeters": 35
+  },
+  {
+    "id": "gs-sg",
+    "name": "Singapore Ground Station",
+    "lat": 1.3521,
+    "lon": 103.8198,
+    "altMeters": 25
+  },
+  {
+    "id": "gs-sydney",
+    "name": "Sydney Ground Station",
+    "lat": -33.8688,
+    "lon": 151.2093,
+    "altMeters": 58
+  },
+  {
+    "id": "gs-london",
+    "name": "London Ground Station",
+    "lat": 51.5074,
+    "lon": -0.1278,
+    "altMeters": 24
+  },
+  {
+    "id": "gs-frankfurt",
+    "name": "Frankfurt Ground Station",
+    "lat": 50.1109,
+    "lon": 8.6821,
+    "altMeters": 112
+  },
+  {
+    "id": "gs-stockholm",
+    "name": "Stockholm Ground Station",
+    "lat": 59.3293,
+    "lon": 18.0686,
+    "altMeters": 28
+  },
+  {
+    "id": "gs-tokyo",
+    "name": "Tokyo Ground Station",
+    "lat": 35.6762,
+    "lon": 139.6503,
+    "altMeters": 40
+  },
+  {
+    "id": "gs-seoul",
+    "name": "Seoul Ground Station",
+    "lat": 37.5665,
+    "lon": 126.9780,
+    "altMeters": 38
+  },
+  {
+    "id": "gs-bangalore",
+    "name": "Bangalore Ground Station",
+    "lat": 12.9716,
+    "lon": 77.5946,
+    "altMeters": 920
+  },
+  {
+    "id": "gs-dubai",
+    "name": "Dubai Ground Station",
+    "lat": 25.2048,
+    "lon": 55.2708,
+    "altMeters": 16
+  }
+]

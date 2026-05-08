@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Fabric PoL Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 32px;
+        color: #1f2933;
+      }
+      .card {
+        border: 1px solid #d9e2ec;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        max-width: 100%;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+      }
+      button {
+        margin-top: 16px;
+        padding: 10px 16px;
+        border-radius: 6px;
+        border: none;
+        background: #2563eb;
+        color: #fff;
+        cursor: pointer;
+      }
+      button:disabled {
+        background: #9fb3c8;
+        cursor: not-allowed;
+      }
+      pre {
+        background: #f0f4f8;
+        padding: 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+      .status {
+        font-weight: bold;
+      }
+      #map {
+        height: 360px;
+        border-radius: 8px;
+        border: 1px solid #d9e2ec;
+        margin-top: 12px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .hint {
+        font-size: 12px;
+        color: #52606d;
+      }
+      .zone-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+        gap: 16px;
+        align-items: start;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 720px) {
+        .zone-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .orbit-visual {
+        display: flex;
+        justify-content: center;
+        margin: 12px 0 20px;
+      }
+      #orbitViz {
+        width: min(360px, 100%);
+        height: auto;
+      }
+      .earth-fill {
+        fill: #0f172a;
+      }
+      .earth-stroke {
+        stroke: #334155;
+        stroke-width: 2;
+        fill: none;
+      }
+      .station-point {
+        fill: #38bdf8;
+      }
+      .satellite-point {
+        fill: #fbbf24;
+      }
+      .orbit-grid {
+        stroke: rgba(148, 163, 184, 0.35);
+        stroke-width: 1;
+        fill: none;
+      }
+      .orbit-legend {
+        display: flex;
+        justify-content: center;
+        margin-top: 8px;
+        font-size: 14px;
+        color: #334155;
+      }
+      .legend-item {
+        margin-right: 16px;
+      }
+      .legend-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 4px;
+        vertical-align: middle;
+      }
+      .station-dot {
+        background: #38bdf8;
+      }
+      .satellite-dot {
+        background: #fbbf24;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Space Fabric Proof of Location</h1>
+    <div class="orbit-visual" aria-hidden="true">
+      <svg id="orbitViz" viewBox="0 0 320 320" role="img" aria-label="Orbital visualization"></svg>
+    </div>
+    <div class="orbit-legend" aria-label="Orbit legend">
+      <div class="legend-item"><span class="legend-dot station-dot"></span>Ground stations</div>
+      <div class="legend-item"><span class="legend-dot satellite-dot"></span>Satellites</div>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <h2>Zone Gate</h2>
+        <p class="status" id="zoneStatus">Loading zone...</p>
+        <p class="status" id="stepStatus">Step 1: Claim your location</p>
+        <p class="hint" id="claimedLocation">Claimed location: --</p>
+        <div class="zone-grid">
+          <div>
+            <div class="row">
+              <label>
+                Latitude
+                <input id="latInput" type="number" step="0.000001" />
+              </label>
+              <label>
+                Longitude
+                <input id="lonInput" type="number" step="0.000001" />
+              </label>
+            </div>
+            <div class="row">
+              <button id="geoBtn" type="button">Verify My Location</button>
+              <button id="defineZoneBtn" type="button">Define Safe Zone on Map</button>
+            </div>
+            <label>
+              Safe zone radius (meters)
+              <input id="zoneRadiusInput" type="number" min="50" step="10" />
+            </label>
+            <p class="hint" id="zoneHint">Click the map to set the safe zone center.</p>
+            <button id="requestBtn">Generate Location Certificate</button>
+          </div>
+          <div>
+            <div id="map"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Location Certificate</h2>
+        <p class="status" id="entropyStatus">Entropy source: pending</p>
+        <p class="status" id="commsStatus">Comms: awaiting schedule</p>
+        <p class="hint" id="commsCountdown">Next link window: --</p>
+        <pre id="commsOutput">No comms sessions yet.</pre>
+        <pre id="certOutput">No certificate yet.</pre>
+        <button id="actionBtn" disabled>Execute Space-Gated Action</button>
+        <p id="actionResult"></p>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,17 @@
+{
+  "name": "space-fabric-pol-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "smoke": "node scripts/smoke-test.mjs",
+    "demo": "node scripts/demo-runner.mjs",
+    "ctrng": "node scripts/ctrng-smoke.mjs"
+  },
+  "dependencies": {
+    "@spacecomputer-io/orbitport-sdk-ts": "^0.2.1",
+    "express": "^4.19.2",
+    "satellite.js": "^7.0.0"
+  }
+}
