@@ -1,15 +1,15 @@
 # Space Fabric PoL MVP
 
-Hackathon-ready Proof of Location (PoL) demo inspired by the Space Fabric / SpaceComputer SEAP protocol. It simulates satellite witnesses, distance-bounding checks, and a SpaceTEE-signed location certificate, plus a front-end gate that unlocks a protected action only when the certificate verifies and the user is inside the safe zone.
+Hackathon-ready Proof of Location (PoL) demo inspired by the Space Fabric / SpaceComputer SEAP protocol. It simulates satellite witnesses, time-of-flight verification, and a satellite-signed location certificate, plus a front-end gate that unlocks a protected action only when verification succeeds and the user is inside the safe zone.
 
 ## What is included
 
 - Mock orbital witness service using TLEs and `satellite.js`
-- SEAP-inspired evidence generation and aggregation
-- SpaceTEE-signed location certificate
-- Mock ZK boundary proof (hash-based commitment)
-- Web UI that gates an action based on the certificate
-- Ground station to satellite comms planning with live countdowns
+- Ground station to satellite pass scheduling (earliest pass per request)
+- Satellite-signed location certificate with `certifiedAt`
+- Verification confidence score (time-of-flight + elevation)
+- Web UI with a globe visualization (real TLE positions)
+- Space-gated action unlocked only after verification passes
 
 ## Quick start
 
@@ -32,17 +32,29 @@ npm run smoke
 npm run demo
 ```
 
+## Deployment notes (GitHub Pages)
+
+GitHub Pages only serves static assets. The API must be hosted separately.
+
+1. Deploy the API (e.g., Render/Railway) using `npm run start`.
+2. Set the UI API base in `src/public/app.js`:
+
+```js
+const API_BASE = "https://your-api.onrender.com";
+```
+
+3. Publish the static UI (copy `src/public` to `docs/`, then enable Pages from `docs/`).
+
 ## Notes
 
-- The ZK proof is a placeholder. Swap in a real boundary proof (e.g., zkSNARK or Plonk) to meet privacy requirements.
-- Evidence signatures are generated with ephemeral Ed25519 keys on each server start.
-- The safe zone is hard-coded in `src/server.js` and can be updated for your venue.
-- The API will fall back to a relaxed evidence policy if fewer than three satellites are in view so the demo remains usable.
-- Certificates now include a satellite-signed `certifiedAt` timestamp when the primary link window opens.
+- The safe zone defaults to Prague but can be updated in `src/server.js`.
+- The globe animation uses actual TLE positions and runs on simulated time for demos.
+- The demo schedules the fastest upcoming pass each time the user requests a certificate.
+- Certificates are signed by the primary satellite key used for the pass window.
 
 ## SpaceComputer integration
 
-This demo now uses the SpaceComputer Orbitport SDK to fetch cTRNG entropy and embeds it in the location certificate payload. When credentials are missing, it falls back to the public IPFS beacon.
+This demo uses the SpaceComputer Orbitport SDK to fetch cTRNG entropy and embeds it in the location certificate payload. When credentials are missing, it falls back to the public IPFS beacon.
 
 Note: The Orbitport SDK requires Node.js 22+. On Node.js 20, the demo uses the IPFS beacon automatically.
 
